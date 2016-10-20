@@ -33,6 +33,16 @@
 #include "fetch.h"
 #include "match.h"
 
+
+#if OPENSSL_VERSION_NUMBER >= 0x10001000L && \
+    OPENSSL_VERSION_NUMBER < 0x10100004L
+// definitions copied from ssl_locl.h
+# define SSL_VERSION_FIX
+# define SSL_SSLV2               0x00000001UL
+# define SSL_SSLV3               0x00000002UL
+# define SSL_TLSV1_2             0x00000004UL
+#endif
+
 void	fetch_status(struct account *, double);
 int	fetch_account(struct account *, struct io *, int, double);
 int	fetch_match(struct account *, struct msg *, struct msgbuf *);
@@ -517,6 +527,10 @@ account_get_method(struct account *a)
 	const SSL_CIPHER	*cipher;
 	static char		 s[128];
 	char			 tmp[128];
+#ifdef SSL_VERSION_FIX
+	unsigned long		alg_ssl;
+	const char		*cipher_version;
+#endif
 
 	if (a->fetch == &fetch_imap) {
 		idata = a->data;
@@ -528,9 +542,28 @@ account_get_method(struct account *a)
 			cipher = SSL_get_current_cipher(pdata->io->ssl);
 	} else
 		cipher = NULL;
+
 	if (cipher != NULL) {
+#ifdef SSL_VERSION_FIX
+                //Work around bug in openssl prior to 1.1.0 release:
+                //SSL_CIPHER_get_version() incorrectly identified
+                //TLSv1.2 as TLSv1/SSLv3
+                alg_ssl = cipher->algorithm_ssl;
+                if (alg_ssl & SSL_SSLV2)
+                        cipher_version = "SSLv2";
+                else if (alg_ssl & SSL_SSLV3)
+                        cipher_version = "SSLv3";
+                else if (alg_ssl & SSL_TLSV1_2)
+                        cipher_version = "TLSv1.2";
+                else
+                        cipher_version = "unknown";
+#endif
 		snprintf(tmp, sizeof tmp, "version=%s %s %d bits",
+#ifdef SSL_VERSION_FIX
+		    cipher_version,
+#else
 		    SSL_CIPHER_get_version(cipher),
+#endif
 		    SSL_CIPHER_get_name(cipher),
 		    SSL_CIPHER_get_bits(cipher, NULL));
 	} else
