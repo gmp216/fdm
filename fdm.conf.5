@@ -370,14 +370,15 @@ for details.
 .Op Ic no-apop
 .Op Ic no-uidl
 .Op Ic starttls
+.Op Ic insecure
 .Xc
 .It Xo Ic pop3s Ic server Ar host
 .Op Ic port Ar port
 .Op Ar userpass
 .Op Ar only
 .Op Ic no-apop
-.Op Ic no-uidl
 .Op Ic no-verify
+.Op Ic no-uidl
 .Op Ic insecure
 .Xc
 These statements define a POP3 or POP3S account.
@@ -471,6 +472,7 @@ not be read from
 .Op Ic no-cram-md5
 .Op Ic no-login
 .Op Ic starttls
+.Op Ic insecure
 .Xc
 .It Xo Ic imap Ic server Ar host
 .Op Ic port Ar port

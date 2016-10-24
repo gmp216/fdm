@@ -305,8 +305,9 @@ yyerror(const char *fmt, ...)
 %type  <expritem> expritem
 %type  <exprop> exprop
 %type  <fetch> fetchtype
-%type  <flag> cont not disabled keep execpipe writeappend compress verify insecure
+%type  <flag> cont not disabled keep execpipe writeappend compress verify
 %type  <flag> apop poptype imaptype nntptype nocrammd5 nologin uidl starttls
+%type  <flag> insecure
 %type  <localgid> localgid
 %type  <locks> lock locklist
 %type  <number> size time numv retrc expire
@@ -1209,7 +1210,8 @@ actitem: execpipe strv
 		 data->path.str = $2;
 		 data->compress = $3;
 	 }
-       | imaptype server userpassnetrc folder1 verify nocrammd5 nologin starttls insecure
+       | imaptype server userpassnetrc folder1 verify nocrammd5 nologin
+	 starttls insecure
 	 {
 		 struct deliver_imap_data	*data;
 
@@ -2191,7 +2193,8 @@ imaponly: only
 		  $$ = FETCH_ONLY_ALL;
 	  }
 
-fetchtype: poptype server userpassnetrc poponly apop verify uidl starttls insecure
+fetchtype: poptype server userpassnetrc poponly apop verify uidl starttls
+	   insecure
 	   {
 		   struct fetch_pop3_data	*data;
 
@@ -2228,7 +2231,7 @@ fetchtype: poptype server userpassnetrc poponly apop verify uidl starttls insecu
 		   data->apop = $5;
 		   data->uidl = $7;
 		   data->starttls = $8;
-                   data->server.insecure = $9;
+		   data->server.insecure = $9;
 
 		   data->path = $4.path;
 		   data->only = $4.only;
@@ -2249,7 +2252,8 @@ fetchtype: poptype server userpassnetrc poponly apop verify uidl starttls insecu
 		   data->path = $5.path;
 		   data->only = $5.only;
 	   }
-	 | imaptype server userpassnetrc folderlist imaponly verify nocrammd5 nologin starttls insecure
+	 | imaptype server userpassnetrc folderlist imaponly verify nocrammd5
+	   nologin starttls insecure
 	   {
 		   struct fetch_imap_data	*data;
 
@@ -2288,7 +2292,7 @@ fetchtype: poptype server userpassnetrc poponly apop verify uidl starttls insecu
 		   data->nocrammd5 = $7;
 		   data->nologin = $8;
 		   data->starttls = $9;
-                   data->server.insecure = $10;
+		   data->server.insecure = $10;
 	   }
 	 | TOKIMAP TOKPIPE replstrv userpass folderlist imaponly
 	   {
@@ -2327,7 +2331,8 @@ fetchtype: poptype server userpassnetrc poponly apop verify uidl starttls insecu
 		   $$.data = data;
 		   data->mboxes = $1;
 	   }
-	 | nntptype server userpassnetrc groups TOKCACHE replpathv verify insecure
+	 | nntptype server userpassnetrc groups TOKCACHE replpathv verify
+	   insecure
 	   {
 		   struct fetch_nntp_data	*data;
 		   char				*cause;

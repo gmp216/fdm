@@ -201,7 +201,7 @@ struct server {
 	struct addrinfo	*ai;
 	int		 ssl;
 	int		 verify;
-	int		insecure;
+	int		 insecure;
 };
 
 /* Proxy type. */
