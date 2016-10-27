@@ -439,7 +439,7 @@ restart:
 				continue;
 			case FETCH_RESTART:
 				log_debug("%s: sleeping",a->name);
-				sleep(60 * 2); // try again in two minutes
+				sleep(conf.fetch_freq);
 				log_debug("%s: fetch, restart",a->name);
 				continue;
 			case FETCH_TICK:
@@ -524,22 +524,18 @@ finished:
 			db_close(cache->db);
 	}
 
-/* 
- * In daemon mode, wait a couple of minutes but always try to restart. If
- * there were errors, we could add a re-try limit or make a better decision
- * based on the particular error.
- */
-	if (conf.daemon) {
-		sleep(60 * 2);
-		goto restart;
-	}
-
 	/* Print results. */
 	if (nflags & FETCH_POLL)
 		log_info("%s: %u messages found", a->name, a->fetch->total(a));
 	else
 		fetch_status(a, tim);
-	return (aborted);
+
+	/* In daemon mode, always try to restart. */
+	if (conf.daemon) {
+		sleep(conf.fetch_freq);
+		goto restart;
+	} else
+		return (aborted);
 }
 
 /*

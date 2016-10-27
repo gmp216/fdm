@@ -155,6 +155,7 @@ yyerror(const char *fmt, ...)
 %token TOKEXEC
 %token TOKEXPIRE
 %token TOKFCNTL
+%token TOKFETCHFREQ
 %token TOKFILEGROUP
 %token TOKFILEUMASK
 %token TOKFLOCK
@@ -608,6 +609,10 @@ set: TOKSET TOKMAXSIZE size
    | TOKSET TOKIDLETIMEOUT time
      {
 	     conf.idle_timeout = $3;
+     }
+   | TOKSET TOKFETCHFREQ time
+     {
+	     conf.fetch_freq = $3;
      }
    | TOKSET TOKIGNOREERRORS
      {
