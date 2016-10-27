@@ -54,6 +54,25 @@ AC_CHECK_HEADERS(
 		sys/tree.h \
 	]
 )
+
+AC_ARG_WITH(
+	[ssl],
+	AC_HELP_STRING([-ssl],[specify path to OpenSSL]),
+	[
+		if test $withval = yes ; then
+			AC_MSG_ERROR(--with-ssl: path not specified)
+		fi
+		CPPFLAGS="$CPPFLAGS -I$withval/include"
+		LDFLAGS="$LDFLAGS -L$withval/lib"
+	]
+)
+
+AC_CHECK_HEADER(
+	openssl/ssl.h,
+	,
+	AC_MSG_ERROR(OpenSSL not found)
+)
+
 AC_CHECK_FUNCS(
 	[ \
 		setproctitle \

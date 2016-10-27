@@ -77,7 +77,7 @@ privilege separation to minimise the amount of code running as the root user.
 
 fdm depends on the Trivial Database library (TDB), available at:
 
-	http://sourceforge.net/projects/tdb/
+	https://tdb.samba.org
 
 Ensure it is installed, then download the source tarball and build fdm with:
 
@@ -108,6 +108,39 @@ to the make command:
 Or PCRE=1 if using GNU make:
 
 	$ make PCRE=1
+
+Building on Mac OS presents special challenges. If you do not have tdb
+installed you can compile and install it from the Samba source tree.
+
+	$ git clone https://github.com/samba-team/samba.git
+
+Go to the Samba directory and check out a stable branch. e.g.:
+
+	$ cd samba
+	$ git checkout origin/v4-5-stable
+
+Then build and install tdb:
+
+	$ cd lib/tdb
+	$ ./configure && make
+	$ sudo make install
+
+You will want to build fdb with a newer version of SSL than what Apple is
+shipping. This is easily done with brew:
+
+	$ brew install openssl
+
+Since brew will not overwrite the version of openssl that Apple installs (and
+it is not recommended that you force it to do so), you can use the "--with-ssl"
+option in fdm's configure script to provide fdm with the path to the version of
+openssl that you would like it to use (e.g. /usr/local/opt/openssl or
+/usr/local/Cellar/openssl/1.0.2j):
+
+	$ cd fdm-?.?
+	$ ./configure --with-ssl=<PATH TO OPENSSL>
+
+Once configure succeeds, proceed with the make and make install steps outlined
+above.
 
 ### Quick start
 
