@@ -1146,7 +1146,7 @@ imap_state_idle2(struct account *a, struct fetch_ctx *fctx)
         char                    *line;
 	int			 tag;
 
-	log_debug("%s: idle2",a->name);
+	log_debug3("%s: idle2",a->name);
 	if (imap_getln(a, fctx, IMAP_RAW, &line) != 0)
 		return (FETCH_ERROR);
 	if (line == NULL)
@@ -1171,7 +1171,7 @@ imap_state_idle3(struct account *a, struct fetch_ctx *fctx)
 	char			*line;
 	int			 tag;
 
-	log_debug("%s: idle3",a->name);
+	log_debug3("%s: idle3",a->name);
 
 	if (time(NULL) > data->idle_restart_time) {
 		log_debug("%s: idle3 timeout",a->name);
@@ -1202,7 +1202,7 @@ imap_state_idle4(struct account *a, struct fetch_ctx *fctx)
 {
 	char			*line;
 
-	log_debug("%s: idle4",a->name);
+	log_debug3("%s: idle4",a->name);
 	if (imap_getln(a, fctx, IMAP_TAGGED, &line) != 0)
 		return (FETCH_ERROR);
 	if (line == NULL)
@@ -1210,7 +1210,7 @@ imap_state_idle4(struct account *a, struct fetch_ctx *fctx)
 	if (!imap_okay(line))
 		return (imap_bad(a, line));
 
-	log_debug("%s: idle4: got OK",a->name);
+	log_debug3("%s: idle4: got OK",a->name);
 
         fctx->state = imap_state_search1;
         return (FETCH_AGAIN);
