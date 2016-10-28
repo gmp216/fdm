@@ -1136,7 +1136,9 @@ imap_state_idle1(struct account *a, struct fetch_ctx *fctx)
 	if (imap_putln(a, "%u IDLE", ++data->tag) != 0)
 		return (FETCH_ERROR);
 
-	data->idle_restart_time = time(NULL) + conf.idle_timeout;
+	data->idle_restart_time = time(NULL) +
+	      ((data->server.timeout) ? data->server.timeout :
+					conf.idle_timeout);
 
 	fctx->state = imap_state_idle2;
 	return (FETCH_BLOCK);

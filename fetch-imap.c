@@ -123,12 +123,25 @@ void
 fetch_imap_desc(struct account *a, char *buf, size_t len)
 {
 	struct fetch_imap_data	*data = a->data;
-	char			*folders;
+	char			*folders, timeout[18];
 
 	folders = fmt_strings("folders ", data->folders);
+	if (data->server.timeout != 0) {
+		snprintf(timeout,sizeof timeout," timeout %u",
+			data->server.timeout);
+	} else {
+		snprintf(timeout,sizeof timeout,"");
+	}
+
 	xsnprintf(buf, len,
-	    "imap%s server \"%s\" port %s user \"%s\" %s",
-	    data->server.ssl ? "s" : "", data->server.host, data->server.port,
-	    data->user, folders);
+	    "imap%s server \"%s\" port %s user \"%s\" %s%s%s",
+	    data->server.ssl ? "s" : "",
+	    data->server.host,
+	    data->server.port,
+	    data->user,
+	    folders,
+	    data->server.insecure ? " insecure" : "",
+	    timeout
+	);
 	xfree(folders);
 }

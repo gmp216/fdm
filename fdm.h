@@ -204,6 +204,7 @@ struct server {
 	int		 ssl;
 	int		 verify;
 	int		 insecure;
+	int		 timeout;
 };
 
 /* Proxy type. */

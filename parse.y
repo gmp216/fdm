@@ -312,7 +312,7 @@ yyerror(const char *fmt, ...)
 %type  <flag> insecure
 %type  <localgid> localgid
 %type  <locks> lock locklist
-%type  <number> size time numv retrc expire
+%type  <number> size time numv retrc expire timeout
 %type  <only> only imaponly
 %type  <poponly> poponly
 %type  <replstrs> replstrslist actions rmheaders accounts users
@@ -1070,6 +1070,15 @@ port: TOKPORT replstrv
 	      xasprintf(&$$, "%lld", $2);
       }
 
+timeout: /* not present */
+      {
+		$$ = 0;	/* use global value */
+      }
+    | TOKTIMEOUT time
+      {
+		$$ = $2;
+      }
+
 server: TOKSERVER replstrv port
 {
 		if (*$2 == '\0')
@@ -1221,7 +1230,7 @@ actitem: execpipe strv
 		 data->compress = $3;
 	 }
        | imaptype server userpassnetrc folder1 verify nocrammd5 nologin
-	 starttls insecure
+	 starttls insecure timeout
 	 {
 		 struct deliver_imap_data	*data;
 
@@ -1262,6 +1271,7 @@ actitem: execpipe strv
 		 data->nologin = $7;
 		 data->starttls = $8;
 		 data->server.insecure = $9;
+		 data->server.timeout = $10;
 	 }
        | TOKSMTP server from to
 	 {
@@ -2263,7 +2273,7 @@ fetchtype: poptype server userpassnetrc poponly apop verify uidl starttls
 		   data->only = $5.only;
 	   }
 	 | imaptype server userpassnetrc folderlist imaponly verify nocrammd5
-	   nologin starttls insecure
+	   nologin starttls insecure timeout
 	   {
 		   struct fetch_imap_data	*data;
 
@@ -2303,6 +2313,7 @@ fetchtype: poptype server userpassnetrc poponly apop verify uidl starttls
 		   data->nologin = $8;
 		   data->starttls = $9;
 		   data->server.insecure = $10;
+		   data->server.timeout = $11;
 	   }
 	 | TOKIMAP TOKPIPE replstrv userpass folderlist imaponly
 	   {
