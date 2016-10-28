@@ -450,6 +450,10 @@ imap_state_capability2(struct account *a, struct fetch_ctx *fctx)
 		return (FETCH_BLOCK);
 	}
 
+	if (conf.daemon && !(data->capa & IMAP_CAPA_IDLE)) {
+		log_debug("%s: IDLE not supported",a->name);
+	}
+
 	return (imap_pick_auth(a, fctx));
 }
 
@@ -1233,7 +1237,6 @@ imap_state_close(struct account *a, struct fetch_ctx *fctx)
 	if (conf.daemon) {
 		/* don't log out, start over after a reasonable delay */
 		fctx->state = imap_state_select1;
-		log_debug("%s: IDLE not supported, restarting",a->name);
 		return (FETCH_RESTART);
 	} else {
 		/* no daemon mode -- fetch more folders then log out. */
